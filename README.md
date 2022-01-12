@@ -23,6 +23,8 @@
   * [2.3) Wrapping Up](#23-wrapping-up)
 - [3) The End](#3-the-end)
 
+---
+
 # 1) Getting Started
 
 ## 1.1) Introduction to UGC Program

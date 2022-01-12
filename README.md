@@ -1,5 +1,27 @@
 # Art of Creating Boxes
 
+- [1) Getting Started](#1-getting-started)
+  * [1.1) Introduction to UGC Program](#11-introduction-to-ugc-program)
+  * [1.2) Researching](#12-researching)
+  * [1.3) Setting up Environment](#13-setting-up-environment)
+    + [1.3.1) Linux Environment](#131-linux-environment)
+    + [1.3.2) Windows Environment](#132-windows-environment)
+- [2) Building Machines](#2-building-machines)
+  * [2.1) Active Directory](#21-active-directory)
+    + [2.1.1) Setting up an Active Directory Domain](#211-setting-up-an-active-directory-domain)
+    + [2.1.2) Joining a machine to Active Directory Domain](#212-joining-a-machine-to-active-directory-domain)
+    + [2.1.3) Setting up Child Domain](#213-setting-up-child-domain)
+    + [2.1.4) Configuring Services](#214-configuring-services)
+    + [2.1.5) Configuring AD Accounts](#215-configuring-ad-accounts)
+  * [2.2) Windows](#22-windows)
+    + [2.2.1) Setting up an Windows Machine](#221-setting-up-an-windows-machine)
+    + [2.2.2) Configuring Windows Accounts](#222-configuring-windows-accounts)
+    + [2.2.3) Creating Services using nssm](#223-creating-services-using-nssm)
+    + [2.2.4) Deploying Apache Server](#224-deploying-apache-server)
+    + [2.2.5) Installing applications](#225-installing-applications)
+    + [2.2.6) Deploying MSSQL Server](#226-deploying-mssql-server)
+  * [2.3) Wrapping Up](#23-wrapping-up)
+- [3) The End](#3-the-end)
 
 # 1) Getting Started
 

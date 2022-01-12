@@ -120,8 +120,6 @@ iii) Next step is to edit VagrantFile :
 
 ![Untitled](images/Untitled%205.png)
 
-![Untitled](images/Untitled%206.png)
-
 iv) For deploying the VM, run the following command from the box directory :
 
 - **vagrant up**

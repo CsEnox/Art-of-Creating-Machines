@@ -1,4 +1,4 @@
-# Art of Creating Boxes
+# Art of Creating Machines
 
 - [1) Getting Started](#1-getting-started)
   * [1.1) Introduction to UGC Program](#11-introduction-to-ugc-program)

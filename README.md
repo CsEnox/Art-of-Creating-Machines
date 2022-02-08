@@ -20,6 +20,13 @@
     + [2.2.4) Deploying Apache Server](#224-deploying-apache-server)
     + [2.2.5) Installing applications](#225-installing-applications)
     + [2.2.6) Deploying MSSQL Server](#226-deploying-mssql-server)
+  * [2.3) Linux](#23-linux)
+    + [2.3.1) Setting up an Linux Machine](#231-setting-up-an-linux-machine)
+    + [2.3.2) Configuring Linux Accounts](#232-configuring-linux-accounts)
+    + [2.3.3) Creating Services using systemd](#233-creating-services-using-systemd)
+    + [2.3.4) Deploying Apache Server](#234-deploying-apache-server)
+    + [2.3.5) Installing applications](#235-installing-applications)
+    + [2.3.6) Deploying MySQL Server](#236-deploying-mysql-server)
   * [2.3) Wrapping Up](#23-wrapping-up)
 - [3) The End](#3-the-end)
 

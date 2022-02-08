@@ -572,7 +572,99 @@ Invoke-SqlCmd -ServerInstance "(local)" -Query "SELECT IS_SRVROLEMEMBER('sysadmi
 
 ![Untitled](images/Untitled%2010.png)
 
-## 2.3) Wrapping Up
+
+## 2.3) Linux
+
+### 2.3.1) Setting up an Linux Machine
+
+The simplest method for managing linux systems through the use of script is the `expect` command. This allows an administrator to be able to automate most tasks. We will configure our hostname and set a new password for the root account.
+When you are not using the `expect` script their multiple command line tricks that can be used automatically to make this possible.
+
+```commandline
+echo -e "${UserPassword}\n${UserPassword}" | passwd root
+
+# We use this command to set the hostname to base
+hostnamectl --static set-hostname 'BASE'
+```
+
+I have set the system to reboot just to ensure the configuration is applied correctly. It is possible to set the hostname via the Vagrantfile if you're operating in environment in which DHCP can manage that.
+
+### 2.3.2) Configuring Linux Accounts
+
+Provisioning linux account's can be achieved automatically via a bash script similar to the one shown below. The group in which the user is added into is very important as that determines the users permissions.
+
+```commandline
+UserPassword="adminpassword"
+useradd -m -G root systemadmin
+echo -e "${UserPassword}\n${UserPassword}" | passwd systemadmin
+```
+
+The sudoers file is special file in linux that allows you to configure permissions and privileges. It is very dynamic and extensible. In order to learn more ensure to type the following command `man sudoers`.
+
+### 2.3.3) Creating Services using systemd
+
+SystemD is the daemon used to manage the deployment of services. It is very structured as opposed to the old init scripts way of doing things.
+The following code block is a minor example of how one can write a basic systemd script. In order to get more insights as how to extend such script please review `man systemd`
+
+```commandline
+cat <<EOF >/etc/systemd/system/test-daemon.service
+[Unit]                                         
+Description=example systemd service unit file. 
+                                               
+[Service]                                      
+ExecStart=/usr/bin/touch /tmp/systemd-service-create-file
+ExecStop=/usr/bin/rm /tmp/systemd-service-create-file
+                                               
+[Install]                                      
+WantedBy=multi-user.target
+EOF
+
+## Change system permissions and reload the systemd configuration file
+/usr/bin/chmod 664 /etc/systemd/system/test-daemon.service
+systemctl daemon-reload
+```
+
+It is possible to try this out using `systemctl start test-daemon` and verify the file is created in the desired location. Then running `systemctl stop test-daemon` to verify that the file is infact removed. SystemD is not limited to only start and stop commands. It is also possible via `WantedBy` to set up environment dependencies such as a network or a third party service.
+
+### 2.3.4) Deploying Apache Server
+
+On linux deploying an apache web server is not a trivial thing to do. It can in most case's be carried out by running a single command. The key thing is to know the package which would be most relevant to what you are trying to achieve. In the case of XAMPP to download and run a script that handles the installation process for you. 
+
+Running the following as root will install and start a Linux, Apache, MySQL (mariadb), PHP server.
+
+```commandline
+curl -s -L https://www.apachefriends.org/xampp-files/8.0.15/xampp-linux-x64-8.0.15-0-installer.run | bash
+/opt/lampp/lampp start
+
+## Configure accurate firewall configuration
+iptables -A INPUT -p tcp -m multiport --dports 80,443 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+iptables -A OUTPUT -p tcp -m multiport --dports 80,443 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+```
+
+This simply downloads and runs the script from the xampp site. There is no systemd service file, so you would need to use the init system type file located in the installation directory with the `/opt/lampp/lampp`. This includes the starting and stopping of the process.
+
+### 2.3.5) Installing applications
+
+As mentioned previously applications can be installed simply by using either `yum` or `apt`. Packages are stored on remote repositories we use package managers to access those packages in those repositories. It is most likely that at times you may encounter packages which are named differently on alternative systems. 
+
+On Centos based systems it would be `yum install -y httpd` and on Debian variations it would be `apt install apache2`. It is also possible to compile from source though this is generally not advised method of installing software on linux.
+
+### 2.3.6) Deploying MySQL Server
+
+On most linux systems installing MySQL is no longer possible or advisable. The preferred version by the community is mariadb which functions just the same as any existing linux system. 
+
+```commandline
+apt-get install -y mariadb-server
+mysql_secure_installation
+
+## Configure accurate firewall configuration
+iptables -A INPUT -p tcp --dport 3306 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+iptables -A OUTPUT -p tcp --sport 3306 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+```
+
+Once you have run the `mysql_secure_installation` command it is then possible to proceed with provisioning your database as required.
+
+## 2.4) Wrapping Up
 
 So once you’re done building the machine, you’ll have to drop flags on the machine, do some more configuration and also clean any left over logs/scripts. Following is an example of how I do it for Windows & Active Directory machines :
 

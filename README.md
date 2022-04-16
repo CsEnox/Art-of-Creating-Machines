@@ -723,7 +723,7 @@ Post-Processors: Post-processors run after the image is built by the builder and
 
 In order to gain a deeper understanding of this we can start by looking at the documention. There information regarding configration parameters and options is avalible.
 
-## Building vagrant images
+## 3.1) Building vagrant images
 
 It is not a major requirement but in some instances of things it is much more suitable to work with standardise images that have a base configuration which is much more suited to your flow. This could be to ensure that the image is hardened and updated so that unexpected exploits can not be used against it. It could also reduce development time and bandwidth requirements since when perform a build its nor longer nessory to run an update when destroy or refreshing a machine to test ensure a scripts idempotency.
 
@@ -776,7 +776,13 @@ build {
 
 As you can we can use either the `shell` or `file` provisioner in order to transport the files and also provision the system. We use set the vagrant post-prossor which defines the out arttificates for the provision system. In this instance we set this to be a vagrant box image including the location to out the image artifact.
 
+It is then possible to run `packer build <with desired config>`
+
+![](images/packer-build.png)
+
 Once we have finished the configuration what is required from this point onwards is to thus import the box for usage vagrant. This is achieved by running the following command: `vagrant box add builds/name-of-box.box`. You can then from this point add the image to vagrant in order to develop the system correctly.
+
+![](images/packer-complete-build.png)
 
 # 4) The End
 

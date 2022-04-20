@@ -28,7 +28,9 @@
     + [2.3.5) Installing applications](#235-installing-applications)
     + [2.3.6) Deploying MySQL Server](#236-deploying-mysql-server)
   * [2.3) Wrapping Up](#23-wrapping-up)
-- [3) The End](#3-the-end)
+- [3) Packer
+  * [3.1) Building vagrant images
+- [4) The End](#4-the-end)
 
 ---
 
@@ -709,7 +711,80 @@ Remove-Item "C:\`$Recycle.Bin\*" -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item "C:\Users\*\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt" -Force -ErrorAction SilentlyContinue
 ```
 
-# 3) The End
+# 3) Packer
+
+Packer is a build tool use to manage the development of virtual machines and various types of portable media. It is highly customizable via its HCL configuration and extablable through the use of plugins. In this tutorial we will be looking at how to use packer in order to provision base images to use for vagrant when developing machines and also how to create ISO's as alternative submission format. 
+
+Packer confiration is composed of 3 main parts for our example. That is the following:
+
+Builders: Builders are responsible for creating machines and generating images from them for various platforms 
+Provisioners: Provisioners use builtin and third-party software to install and configure the machine image after booting. 
+Post-Processors: Post-processors run after the image is built by the builder and provisioned by the provisioner(s).
+
+In order to gain a deeper understanding of this we can start by looking at the documention. There information regarding configration parameters and options is avalible.
+
+## 3.1) Building vagrant images
+
+It is not a major requirement but in some instances of things it is much more suitable to work with standardise images that have a base configuration which is much more suited to your flow. This could be to ensure that the image is hardened and updated so that unexpected exploits can not be used against it. It could also reduce development time and bandwidth requirements since when perform a build its nor longer nessory to run an update when destroy or refreshing a machine to test ensure a scripts idempotency.
+
+This configuration can be written in both HCL or json. In this example we are currently use HCL. The following configuration is an example of an builder that can be used in order to create a VM image. Their various types of builders avalible the key one being `virtualbox-iso`. This enables us to create a VM using an ISO to define the OS to made into vagrant images. 
+
+```
+source "virtualbox-iso" "CentOS-ISO-image" { # The builder type including the name to reference the resource
+  boot_command            = ["<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"] # Command to be run a boot for example loading the kickstart configuration
+  boot_wait               = "10s" # This is how long to wait prior to using the boot command
+  disk_size               = 104800
+  guest_os_type           = "RedHat_64" # The flavour of the OS we intend to install
+  headless                = true # This ensure that no gui is present and CLI type of configuration
+  http_directory          = "http" 
+  iso_checksum            = "sha256:bba314624956961a2ea31dd460cd860a77911c1e0a56e4820a12b9c5dad363f5"
+  iso_urls                = ["file:///home/m3rl1n/Downloads/CentOS-7-x86_64-Minimal-1708.iso"]
+  shutdown_command        = "sudo /sbin/halt -p" # Enable's you to specify a shutdown command if diffirent from the standard command
+  shutdown_timeout        = "5m" 
+  ssh_password            = "vagrant" # The password to be configured for the user to used for ssh
+  ssh_port                = 22
+  ssh_timeout             = "90m"
+  ssh_username            = "root" # This creates a base user if one does not exist
+  vboxmanage              = [["modifyvm", "{{ .Name }}", "--memory", "2048"], ["modifyvm", "{{ .Name }}", "--cpus", "2"]] # This specifies the configuration of the virtual machine to be created
+  virtualbox_version_file = ".vbox_version"
+  vm_name                 = "packer-centos-7-x86_64"
+}
+```
+
+This is a basic working configuration though it can be customised heavily to suite the users environment. The key thing to be understood is that this specifies the configuration for the build command.
+ 
+The build section is the section that specifies the key configuration for the system in question. This section within the HCL configuration also contains the provisioner and post-processor. These section allow us to define the output of the system we are creating and also enables us to provision the system in use based on varying configuratio parameters.
+
+```
+build {
+  sources = ["source.virtualbox-iso.CentOS-7-ISO-image"]
+
+  provisioner "shell" {
+    scripts = ["scripts/base.sh"]
+  }
+
+  provisioner "file" {
+    destination = "/etc/cron.daily/cleanup.sh"
+    source      = "./files/cleanup.sh"
+  }
+
+  post-processor "vagrant" {
+    output = "builds/<no value>-centos7.box"
+  }
+}
+```
+
+As you can we can use either the `shell` or `file` provisioner in order to transport the files and also provision the system. We use set the vagrant post-prossor which defines the out arttificates for the provision system. In this instance we set this to be a vagrant box image including the location to out the image artifact.
+
+It is then possible to run `packer build <with desired config>`
+
+![](images/packer-build.png)
+
+Once we have finished the configuration what is required from this point onwards is to thus import the box for usage vagrant. This is achieved by running the following command: `vagrant box add builds/name-of-box.box`. You can then from this point add the image to vagrant in order to develop the system correctly.
+
+![](images/packer-complete-build.png)
+
+# 4) The End
 
 Thank you for reading through the guide and I hope things that I’ve provided will be helpful.
 

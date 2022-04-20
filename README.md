@@ -28,7 +28,7 @@
     + [2.3.5) Installing applications](#235-installing-applications)
     + [2.3.6) Deploying MySQL Server](#236-deploying-mysql-server)
   * [2.3) Wrapping Up](#23-wrapping-up)
-- [3) Packer
+- [3) Packer(#3-packer)
   * [3.1) Building vagrant images
 - [4) The End](#4-the-end)
 
